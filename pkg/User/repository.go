@@ -5,7 +5,7 @@ import (
 )
 
 type Repository interface {
-	CreateUser(ctx context.Context, user *User) (*User, error)
+	CreateUser(ctx context.Context, user *User) error
 
 	GetUser(ctx context.Context, id string) (*User, error)
 

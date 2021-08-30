@@ -2,23 +2,25 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
+	"github.com/subhrapaladhi/User-Data-Management-with-GoLang/api/controller"
 	"github.com/subhrapaladhi/User-Data-Management-with-GoLang/api/views"
+	users "github.com/subhrapaladhi/User-Data-Management-with-GoLang/pkg/User"
 )
 
-func Register() *http.ServeMux {
-	mux := http.NewServeMux()
-	mux.HandleFunc("/ping", func(rw http.ResponseWriter, r *http.Request) {
+func UserRoutes(mux *http.ServeMux, svc users.Service) {
+	mux.HandleFunc("/user/ping", func(rw http.ResponseWriter, r *http.Request) {
+		fmt.Println(r)
 		if r.Method == http.MethodGet {
-			data := views.ResponseStruct{
-				Code: http.StatusOK,
-				Body: "pong",
-			}
 			rw.WriteHeader(http.StatusOK)
-			json.NewEncoder(rw).Encode(data)
+			json.NewEncoder(rw).Encode(views.ResponseStruct{
+				Code: http.StatusOK,
+				Data: "user pong",
+			})
 		}
 	})
 
-	return mux
+	mux.Handle("/user/register", controller.RegisterUser(svc))
 }

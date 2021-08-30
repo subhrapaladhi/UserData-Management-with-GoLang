@@ -7,7 +7,7 @@ import (
 )
 
 type Service interface {
-	Register(ctx context.Context, email, name, phone, password string) (*User, error)
+	Register(ctx context.Context, email, name, phone, password string) error
 
 	Login(ctx context.Context, email, password string) (*User, error)
 
@@ -28,7 +28,7 @@ func NewService(r Repository) Service {
 	}
 }
 
-func (s *service) Register(ctx context.Context, email, name, phone, password string) (u *User, err error) {
+func (s *service) Register(ctx context.Context, email, name, phone, password string) (err error) {
 	hasher := md5.New()
 	hasher.Write([]byte(password))
 
