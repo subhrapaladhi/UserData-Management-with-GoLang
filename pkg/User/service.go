@@ -1,4 +1,4 @@
-package user
+package users
 
 import (
 	"context"
@@ -32,7 +32,7 @@ func (s *service) Register(ctx context.Context, email, name, phone, password str
 	hasher := md5.New()
 	hasher.Write([]byte(password))
 
-	newUser := User{email: email, name: name, phone: phone, password: hex.EncodeToString(hasher.Sum(nil))}
+	newUser := User{Email: email, Name: name, Phone: phone, Password: hex.EncodeToString(hasher.Sum(nil))}
 
 	return s.repo.CreateUser(ctx, &newUser)
 }
