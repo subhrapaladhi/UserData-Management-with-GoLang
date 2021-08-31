@@ -23,4 +23,5 @@ func UserRoutes(mux *http.ServeMux, svc users.Service) {
 	})
 
 	mux.Handle("/user/register", controller.RegisterUser(svc))
+	mux.Handle("/user/", controller.UserFunctions(svc))
 }

@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"context"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -17,15 +18,36 @@ func RegisterUser(svc users.Service) http.Handler {
 				log.Fatal(err)
 			}
 
-			err := svc.Register(r.Context(), newUser.Email, newUser.Name, newUser.Phone, newUser.Password)
+			result, err := svc.Register(r.Context(), newUser.Email, newUser.Name, newUser.Phone, newUser.Password)
 			if err != nil {
 				log.Fatal(err)
 			}
 			rw.WriteHeader(http.StatusCreated)
 			json.NewEncoder(rw).Encode(views.ResponseStruct{
 				Code: http.StatusCreated,
-				Data: newUser,
+				Data: result,
 			})
+		} else {
+			rw.WriteHeader(http.StatusNotFound)
+		}
+	})
+}
+
+func UserFunctions(svc users.Service) http.Handler {
+	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			id := r.URL.Path[6:]
+			user, err := svc.GetUserProfile(context.TODO(), id)
+			if err != nil {
+				log.Fatal(err)
+			}
+			rw.WriteHeader(http.StatusOK)
+			json.NewEncoder(rw).Encode(views.ResponseStruct{
+				Code: http.StatusOK,
+				Data: user,
+			})
+		} else {
+			rw.WriteHeader(http.StatusNotFound)
 		}
 	})
 }

@@ -7,11 +7,11 @@ import (
 )
 
 type Service interface {
-	Register(ctx context.Context, email, name, phone, password string) error
+	Register(ctx context.Context, email, name, phone, password string) (interface{}, error)
 
 	Login(ctx context.Context, email, password string) (*User, error)
 
-	GetUserProfile(ctx context.Context, id string) (*User, error)
+	GetUserProfile(ctx context.Context, id string) (interface{}, error)
 
 	ModifyUserProfile(ctx context.Context, id, email, name, phone, password string) (*User, error)
 
@@ -28,7 +28,7 @@ func NewService(r Repository) Service {
 	}
 }
 
-func (s *service) Register(ctx context.Context, email, name, phone, password string) (err error) {
+func (s *service) Register(ctx context.Context, email, name, phone, password string) (result interface{}, err error) {
 	hasher := md5.New()
 	hasher.Write([]byte(password))
 
@@ -41,7 +41,7 @@ func (s *service) Login(ctx context.Context, email, password string) (u *User, e
 	panic("not implemented")
 }
 
-func (s *service) GetUserProfile(ctx context.Context, id string) (u *User, err error) {
+func (s *service) GetUserProfile(ctx context.Context, id string) (u interface{}, err error) {
 	return s.repo.GetUser(ctx, id)
 }
 

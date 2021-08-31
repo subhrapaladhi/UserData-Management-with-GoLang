@@ -5,9 +5,9 @@ import (
 )
 
 type Repository interface {
-	CreateUser(ctx context.Context, user *User) error
+	CreateUser(ctx context.Context, user *User) (interface{}, error)
 
-	GetUser(ctx context.Context, id string) (*User, error)
+	GetUser(ctx context.Context, id string) (interface{}, error)
 
 	ModifyUser(ctx context.Context, id string, user *User) (*User, error)
 
