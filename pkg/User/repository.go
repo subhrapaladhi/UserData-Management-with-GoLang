@@ -5,11 +5,13 @@ import (
 )
 
 type Repository interface {
-	CreateUser(ctx context.Context, user *User) (interface{}, error)
+	CreateUser(ctx context.Context, user *User) (string, error)
 
-	GetUser(ctx context.Context, id string) (interface{}, error)
+	GetUserById(ctx context.Context, id string) (*User, error)
 
-	ModifyUser(ctx context.Context, id string, user *User) (interface{}, error)
+	GetUserByEmailPassword(ctx context.Context, email, password string) (*User, error)
 
-	DeleteUser(ctx context.Context, id string) (interface{}, error)
+	ModifyUser(ctx context.Context, id string, user *User) (*User, error)
+
+	DeleteUser(ctx context.Context, id string) (*User, error)
 }

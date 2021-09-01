@@ -7,15 +7,15 @@ import (
 )
 
 type Service interface {
-	Register(ctx context.Context, email, name, phone, password string) (interface{}, error)
+	Register(ctx context.Context, email, name, phone, password string) (string, error)
 
 	Login(ctx context.Context, email, password string) (*User, error)
 
-	GetUserProfile(ctx context.Context, id string) (interface{}, error)
+	GetUserProfile(ctx context.Context, id string) (*User, error)
 
-	ModifyUserProfile(ctx context.Context, id, email, name, phone, password string) (interface{}, error)
+	ModifyUserProfile(ctx context.Context, id, email, name, phone, password string) (*User, error)
 
-	DeleteUserProfile(ctx context.Context, id string) (interface{}, error)
+	DeleteUserProfile(ctx context.Context, id string) (*User, error)
 }
 
 type service struct {
@@ -28,7 +28,7 @@ func NewService(r Repository) Service {
 	}
 }
 
-func (s *service) Register(ctx context.Context, email, name, phone, password string) (result interface{}, err error) {
+func (s *service) Register(ctx context.Context, email, name, phone, password string) (id string, err error) {
 	hasher := md5.New()
 	hasher.Write([]byte(password))
 
@@ -38,14 +38,16 @@ func (s *service) Register(ctx context.Context, email, name, phone, password str
 }
 
 func (s *service) Login(ctx context.Context, email, password string) (u *User, err error) {
-	panic("not implemented")
+	hasher := md5.New()
+	hasher.Write([]byte(password))
+	return s.repo.GetUserByEmailPassword(ctx, email, hex.EncodeToString(hasher.Sum(nil)))
 }
 
-func (s *service) GetUserProfile(ctx context.Context, id string) (u interface{}, err error) {
-	return s.repo.GetUser(ctx, id)
+func (s *service) GetUserProfile(ctx context.Context, id string) (u *User, err error) {
+	return s.repo.GetUserById(ctx, id)
 }
 
-func (s *service) ModifyUserProfile(ctx context.Context, id, email, name, phone, password string) (u interface{}, err error) {
+func (s *service) ModifyUserProfile(ctx context.Context, id, email, name, phone, password string) (u *User, err error) {
 	userData := User{}
 
 	if email != "" {
@@ -66,6 +68,6 @@ func (s *service) ModifyUserProfile(ctx context.Context, id, email, name, phone,
 	return s.repo.ModifyUser(ctx, id, &userData)
 }
 
-func (s *service) DeleteUserProfile(ctx context.Context, id string) (u interface{}, err error) {
+func (s *service) DeleteUserProfile(ctx context.Context, id string) (u *User, err error) {
 	return s.repo.DeleteUser(ctx, id)
 }
