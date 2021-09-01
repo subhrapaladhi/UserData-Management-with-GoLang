@@ -11,5 +11,5 @@ type Repository interface {
 
 	ModifyUser(ctx context.Context, id string, user *User) (interface{}, error)
 
-	DeleteUser(ctx context.Context, id string) (bool, error)
+	DeleteUser(ctx context.Context, id string) (interface{}, error)
 }

@@ -59,6 +59,16 @@ func (r *repo) ModifyUser(ctx context.Context, id string, user *User) (u interfa
 	return result, err
 }
 
-func (r *repo) DeleteUser(ctx context.Context, id string) (success bool, err error) {
-	panic("not implemented")
+func (r *repo) DeleteUser(ctx context.Context, id string) (u interface{}, err error) {
+	collection := r.DB.Database("usermgt").Collection("users")
+	oid, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var deletedUser interface{}
+	if err = collection.FindOneAndDelete(ctx, bson.M{"_id": oid}).Decode(&deletedUser); err != nil {
+		log.Fatal(err)
+	}
+	return deletedUser, err
 }

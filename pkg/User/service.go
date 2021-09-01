@@ -15,7 +15,7 @@ type Service interface {
 
 	ModifyUserProfile(ctx context.Context, id, email, name, phone, password string) (interface{}, error)
 
-	DeleteUserProfile(ctx context.Context, id string) (*User, error)
+	DeleteUserProfile(ctx context.Context, id string) (interface{}, error)
 }
 
 type service struct {
@@ -66,6 +66,6 @@ func (s *service) ModifyUserProfile(ctx context.Context, id, email, name, phone,
 	return s.repo.ModifyUser(ctx, id, &userData)
 }
 
-func (s *service) DeleteUserProfile(ctx context.Context, id string) (u *User, err error) {
-	panic("not implemented")
+func (s *service) DeleteUserProfile(ctx context.Context, id string) (u interface{}, err error) {
+	return s.repo.DeleteUser(ctx, id)
 }

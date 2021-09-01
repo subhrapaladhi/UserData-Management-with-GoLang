@@ -61,6 +61,17 @@ func UserFunctions(svc users.Service) http.Handler {
 				Code: http.StatusOK,
 				Data: result,
 			})
+		} else if r.Method == http.MethodDelete {
+			id := r.URL.Path[6:]
+			deletedUser, err := svc.DeleteUserProfile(context.TODO(), id)
+			if err != nil {
+				log.Fatal(err)
+			}
+			rw.WriteHeader(http.StatusOK)
+			json.NewEncoder(rw).Encode(views.ResponseStruct{
+				Code: http.StatusOK,
+				Data: deletedUser,
+			})
 		} else {
 			rw.WriteHeader(http.StatusNotFound)
 		}
