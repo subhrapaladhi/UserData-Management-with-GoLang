@@ -46,6 +46,21 @@ func UserFunctions(svc users.Service) http.Handler {
 				Code: http.StatusOK,
 				Data: user,
 			})
+		} else if r.Method == http.MethodPatch {
+			id := r.URL.Path[6:]
+			var userData users.User
+			if err := json.NewDecoder(r.Body).Decode(&userData); err != nil {
+				log.Fatal(err)
+			}
+			result, err := svc.ModifyUserProfile(context.TODO(), id, userData.Email, userData.Name, userData.Phone, userData.Password)
+			if err != nil {
+				log.Fatal(err)
+			}
+			rw.WriteHeader(http.StatusOK)
+			json.NewEncoder(rw).Encode(views.ResponseStruct{
+				Code: http.StatusOK,
+				Data: result,
+			})
 		} else {
 			rw.WriteHeader(http.StatusNotFound)
 		}

@@ -13,7 +13,7 @@ type Service interface {
 
 	GetUserProfile(ctx context.Context, id string) (interface{}, error)
 
-	ModifyUserProfile(ctx context.Context, id, email, name, phone, password string) (*User, error)
+	ModifyUserProfile(ctx context.Context, id, email, name, phone, password string) (interface{}, error)
 
 	DeleteUserProfile(ctx context.Context, id string) (*User, error)
 }
@@ -45,9 +45,25 @@ func (s *service) GetUserProfile(ctx context.Context, id string) (u interface{},
 	return s.repo.GetUser(ctx, id)
 }
 
-func (s *service) ModifyUserProfile(ctx context.Context, id, email, name, phone, password string) (u *User, err error) {
-	panic("not implemented")
-	// return s.repo.ModifyUser(ctx, )
+func (s *service) ModifyUserProfile(ctx context.Context, id, email, name, phone, password string) (u interface{}, err error) {
+	userData := User{}
+
+	if email != "" {
+		userData.Email = email
+	}
+	if name != "" {
+		userData.Name = name
+	}
+	if phone != "" {
+		userData.Phone = phone
+	}
+	if password != "" {
+		hasher := md5.New()
+		hasher.Write([]byte(password))
+		userData.Password = hex.EncodeToString(hasher.Sum(nil))
+	}
+
+	return s.repo.ModifyUser(ctx, id, &userData)
 }
 
 func (s *service) DeleteUserProfile(ctx context.Context, id string) (u *User, err error) {
