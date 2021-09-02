@@ -82,6 +82,7 @@ func LoginUser(svc users.Service) http.Handler {
 
 func UserFunctions(svc users.Service) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+		// id := r.Context().Value("jwtData").(jwt.MapClaims)["id"] //getting id from the jwt data set in the context by the auth middleware
 		if r.Method == http.MethodGet { // Get using id
 			id := r.URL.Path[6:]
 			user, err := svc.GetUserProfile(context.TODO(), id)
