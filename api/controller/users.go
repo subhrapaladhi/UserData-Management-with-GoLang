@@ -82,9 +82,14 @@ func LoginUser(svc users.Service) http.Handler {
 
 func UserFunctions(svc users.Service) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
-		// id := r.Context().Value("jwtData").(jwt.MapClaims)["id"] //getting id from the jwt data set in the context by the auth middleware
-		if r.Method == http.MethodGet { // Get using id
+		uid := r.Context().Value("jwtData").(jwt.MapClaims)["id"].(string) //getting id from the jwt data set in the context by the auth middleware
+		if r.Method == http.MethodGet {                                    // Get using id
 			id := r.URL.Path[6:]
+			if uid != id {
+				rw.WriteHeader(http.StatusUnauthorized)
+				rw.Write([]byte("Unauthorized: JWT id doesn't match query id"))
+				return
+			}
 			user, err := svc.GetUserProfile(context.TODO(), id)
 			if err != nil {
 				log.Fatal(err)
@@ -96,6 +101,11 @@ func UserFunctions(svc users.Service) http.Handler {
 			})
 		} else if r.Method == http.MethodPatch { // Edit user data
 			id := r.URL.Path[6:]
+			if uid != id {
+				rw.WriteHeader(http.StatusUnauthorized)
+				rw.Write([]byte("Unauthorized: JWT id doesn't match query id"))
+				return
+			}
 			var userData users.User
 			if err := json.NewDecoder(r.Body).Decode(&userData); err != nil {
 				log.Fatal(err)
@@ -111,6 +121,11 @@ func UserFunctions(svc users.Service) http.Handler {
 			})
 		} else if r.Method == http.MethodDelete { // Delete user
 			id := r.URL.Path[6:]
+			if uid != id {
+				rw.WriteHeader(http.StatusUnauthorized)
+				rw.Write([]byte("Unauthorized: JWT id doesn't match query id"))
+				return
+			}
 			deletedUser, err := svc.DeleteUserProfile(context.TODO(), id)
 			if err != nil {
 				log.Fatal(err)
