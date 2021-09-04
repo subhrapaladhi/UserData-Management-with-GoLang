@@ -52,6 +52,10 @@ func (r *repo) GetUserByEmailPassword(ctx context.Context, email, password strin
 	return &result, err
 }
 
+func (r *repo) GetAllUsers(ctx context.Context) (interface{}, error) {
+	panic("not implemented")
+}
+
 func (r *repo) ModifyUser(ctx context.Context, id string, user *User) (u *User, err error) {
 	collection := r.DB.Database("usermgt").Collection("users")
 	oid, err := primitive.ObjectIDFromHex(id)

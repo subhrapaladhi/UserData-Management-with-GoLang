@@ -11,11 +11,11 @@ type Service interface {
 
 	Login(ctx context.Context, email, password string) (*User, error)
 
-	GetUserProfile(ctx context.Context, id string) (*User, error)
+	GetProfile(ctx context.Context, id string) (*User, error)
 
-	ModifyUserProfile(ctx context.Context, id, email, name, phone, password string) (*User, error)
+	ModifyProfile(ctx context.Context, id, email, name, phone, password string) (*User, error)
 
-	DeleteUserProfile(ctx context.Context, id string) (*User, error)
+	DeleteProfile(ctx context.Context, id string) (*User, error)
 }
 
 type service struct {
@@ -43,11 +43,11 @@ func (s *service) Login(ctx context.Context, email, password string) (u *User, e
 	return s.repo.GetUserByEmailPassword(ctx, email, hex.EncodeToString(hasher.Sum(nil)))
 }
 
-func (s *service) GetUserProfile(ctx context.Context, id string) (u *User, err error) {
+func (s *service) GetProfile(ctx context.Context, id string) (u *User, err error) {
 	return s.repo.GetUserById(ctx, id)
 }
 
-func (s *service) ModifyUserProfile(ctx context.Context, id, email, name, phone, password string) (u *User, err error) {
+func (s *service) ModifyProfile(ctx context.Context, id, email, name, phone, password string) (u *User, err error) {
 	userData := User{}
 
 	if email != "" {
@@ -68,6 +68,6 @@ func (s *service) ModifyUserProfile(ctx context.Context, id, email, name, phone,
 	return s.repo.ModifyUser(ctx, id, &userData)
 }
 
-func (s *service) DeleteUserProfile(ctx context.Context, id string) (u *User, err error) {
+func (s *service) DeleteProfile(ctx context.Context, id string) (u *User, err error) {
 	return s.repo.DeleteUser(ctx, id)
 }

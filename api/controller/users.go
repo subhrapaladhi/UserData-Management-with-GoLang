@@ -90,7 +90,7 @@ func UserFunctions(svc users.Service) http.Handler {
 				rw.Write([]byte("Unauthorized: JWT id doesn't match query id"))
 				return
 			}
-			user, err := svc.GetUserProfile(context.TODO(), id)
+			user, err := svc.GetProfile(context.TODO(), id)
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -110,7 +110,7 @@ func UserFunctions(svc users.Service) http.Handler {
 			if err := json.NewDecoder(r.Body).Decode(&userData); err != nil {
 				log.Fatal(err)
 			}
-			result, err := svc.ModifyUserProfile(context.TODO(), id, userData.Email, userData.Name, userData.Phone, userData.Password)
+			result, err := svc.ModifyProfile(context.TODO(), id, userData.Email, userData.Name, userData.Phone, userData.Password)
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -126,7 +126,7 @@ func UserFunctions(svc users.Service) http.Handler {
 				rw.Write([]byte("Unauthorized: JWT id doesn't match query id"))
 				return
 			}
-			deletedUser, err := svc.DeleteUserProfile(context.TODO(), id)
+			deletedUser, err := svc.DeleteProfile(context.TODO(), id)
 			if err != nil {
 				log.Fatal(err)
 			}

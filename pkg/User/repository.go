@@ -11,6 +11,8 @@ type Repository interface {
 
 	GetUserByEmailPassword(ctx context.Context, email, password string) (*User, error)
 
+	GetAllUsers(ctx context.Context) (interface{}, error)
+
 	ModifyUser(ctx context.Context, id string, user *User) (*User, error)
 
 	DeleteUser(ctx context.Context, id string) (*User, error)
