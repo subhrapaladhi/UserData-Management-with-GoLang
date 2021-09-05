@@ -9,6 +9,8 @@ type Repository interface {
 
 	GetAdminByEmailPassword(ctx context.Context, email, password string) (*Admin, error)
 
+	GetAllAdmins(ctx context.Context) ([]Admin, error)
+
 	ModifyAdmin(ctx context.Context, id string, admin *Admin) (*Admin, error)
 
 	DeleteAdmin(ctx context.Context, id string) (*Admin, error)

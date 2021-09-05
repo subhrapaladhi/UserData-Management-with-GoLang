@@ -52,8 +52,23 @@ func (r *repo) GetUserByEmailPassword(ctx context.Context, email, password strin
 	return &result, err
 }
 
-func (r *repo) GetAllUsers(ctx context.Context) (interface{}, error) {
-	panic("not implemented")
+func (r *repo) GetAllUsers(ctx context.Context) (userList []User, err error) {
+	collection := r.DB.Database("usermgt").Collection("users")
+	results, err := collection.Find(ctx, bson.D{})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var temp User
+	for results.Next(ctx) {
+		err = results.Decode(&temp)
+		if err != nil {
+			log.Fatal(err)
+		}
+		userList = append(userList, temp)
+	}
+
+	return userList, err
 }
 
 func (r *repo) ModifyUser(ctx context.Context, id string, user *User) (u *User, err error) {

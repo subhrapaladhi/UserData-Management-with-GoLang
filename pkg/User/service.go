@@ -13,6 +13,8 @@ type Service interface {
 
 	GetProfile(ctx context.Context, id string) (*User, error)
 
+	GetAll(ctx context.Context) ([]User, error)
+
 	ModifyProfile(ctx context.Context, id, email, name, phone, password string) (*User, error)
 
 	DeleteProfile(ctx context.Context, id string) (*User, error)
@@ -33,7 +35,6 @@ func (s *service) Register(ctx context.Context, email, name, phone, password str
 	hasher.Write([]byte(password))
 
 	newUser := User{Email: email, Name: name, Phone: phone, Password: hex.EncodeToString(hasher.Sum(nil))}
-
 	return s.repo.CreateUser(ctx, &newUser)
 }
 
@@ -41,6 +42,10 @@ func (s *service) Login(ctx context.Context, email, password string) (u *User, e
 	hasher := md5.New()
 	hasher.Write([]byte(password))
 	return s.repo.GetUserByEmailPassword(ctx, email, hex.EncodeToString(hasher.Sum(nil)))
+}
+
+func (s *service) GetAll(ctx context.Context) (u []User, err error) {
+	return s.repo.GetAllUsers(ctx)
 }
 
 func (s *service) GetProfile(ctx context.Context, id string) (u *User, err error) {
