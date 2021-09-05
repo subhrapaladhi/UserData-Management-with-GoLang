@@ -10,6 +10,7 @@ import (
 	"github.com/spf13/viper"
 	"github.com/subhrapaladhi/User-Data-Management-with-GoLang/api"
 	"github.com/subhrapaladhi/User-Data-Management-with-GoLang/api/views"
+	admins "github.com/subhrapaladhi/User-Data-Management-with-GoLang/pkg/Admin"
 	users "github.com/subhrapaladhi/User-Data-Management-with-GoLang/pkg/User"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -33,6 +34,9 @@ func serverInit(db *mongo.Client) *http.ServeMux {
 	userRepo := users.NewMongodbRepo(db)
 	userSvc := users.NewService(userRepo)
 
+	adminRepo := admins.NewMongodbRepo(db)
+	adminSvc := admins.NewService(adminRepo)
+
 	mux.HandleFunc("/ping", func(rw http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
 			rw.WriteHeader(http.StatusOK)
@@ -44,6 +48,7 @@ func serverInit(db *mongo.Client) *http.ServeMux {
 	})
 
 	api.UserRoutes(mux, userSvc)
+	api.AdminRoutes(mux, adminSvc)
 
 	return mux
 }
