@@ -3,11 +3,13 @@ package controller
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/spf13/viper"
+	"github.com/subhrapaladhi/User-Data-Management-with-GoLang/api/views"
 	admins "github.com/subhrapaladhi/User-Data-Management-with-GoLang/pkg/Admin"
 )
 
@@ -64,7 +66,7 @@ func LoginAdmin(svc admins.Service) http.Handler {
 
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 			"id":   admin.Id,
-			"role": "user",
+			"role": "admin",
 		})
 		tokenString, err := token.SignedString([]byte(viper.GetString("JWTSECRET")))
 		if err != nil {
@@ -76,5 +78,52 @@ func LoginAdmin(svc admins.Service) http.Handler {
 			"data":  admin,
 			"token": tokenString,
 		})
+	})
+}
+
+func AdminFunctions(svc admins.Service) http.Handler {
+	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+		// uid := r.Context().Value("jwtData").(jwt.MapClaims)["id"].(string) //getting id from the jwt data set in the context by the auth middleware
+		if r.Method == http.MethodGet { // Get using id
+			id := r.URL.Path[7:]
+			fmt.Println(id)
+			admin, err := svc.GetProfile(context.TODO(), id)
+			if err != nil {
+				log.Fatal(err)
+			}
+			rw.WriteHeader(http.StatusOK)
+			json.NewEncoder(rw).Encode(views.ResponseStruct{
+				Code: http.StatusOK,
+				Data: admin,
+			})
+		} else if r.Method == http.MethodPatch { // Edit user data
+			id := r.URL.Path[7:]
+			var adminData admins.Admin
+			if err := json.NewDecoder(r.Body).Decode(&adminData); err != nil {
+				log.Fatal(err)
+			}
+			result, err := svc.ModifyProfile(context.TODO(), id, adminData.Email, adminData.Name, adminData.Phone, adminData.Password)
+			if err != nil {
+				log.Fatal(err)
+			}
+			rw.WriteHeader(http.StatusOK)
+			json.NewEncoder(rw).Encode(views.ResponseStruct{
+				Code: http.StatusOK,
+				Data: result,
+			})
+		} else if r.Method == http.MethodDelete { // Delete user
+			id := r.URL.Path[7:]
+			deletedUser, err := svc.DeleteProfile(context.TODO(), id)
+			if err != nil {
+				log.Fatal(err)
+			}
+			rw.WriteHeader(http.StatusOK)
+			json.NewEncoder(rw).Encode(views.ResponseStruct{
+				Code: http.StatusOK,
+				Data: deletedUser,
+			})
+		} else {
+			rw.WriteHeader(http.StatusNotFound)
+		}
 	})
 }

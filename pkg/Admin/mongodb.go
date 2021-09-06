@@ -7,6 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type repo struct {
@@ -71,9 +72,30 @@ func (r *repo) GetAllAdmins(ctx context.Context) (adminList []Admin, err error) 
 }
 
 func (r *repo) ModifyAdmin(ctx context.Context, id string, admin *Admin) (a *Admin, err error) {
-	panic("not implemented")
+	collection := r.DB.Database("usermgt").Collection("admins")
+	oid, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// var result interface{}
+	result := Admin{}
+	if err = collection.FindOneAndUpdate(ctx, bson.M{"_id": oid}, bson.M{"$set": admin}, options.FindOneAndUpdate().SetReturnDocument(options.After)).Decode(&result); err != nil {
+		log.Fatal(err)
+	}
+	return &result, err
 }
 
 func (r *repo) DeleteAdmin(ctx context.Context, id string) (admin *Admin, err error) {
-	panic("not implemented")
+	collection := r.DB.Database("usermgt").Collection("admins")
+	oid, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	deletedAdmin := Admin{}
+	if err = collection.FindOneAndDelete(ctx, bson.M{"_id": oid}).Decode(&deletedAdmin); err != nil {
+		log.Fatal(err)
+	}
+	return &deletedAdmin, err
 }

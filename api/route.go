@@ -18,4 +18,5 @@ func UserRoutes(mux *http.ServeMux, svc users.Service) {
 func AdminRoutes(mux *http.ServeMux, svc admins.Service) {
 	mux.Handle("/admin/register", controller.RegisterAdmin(svc))
 	mux.Handle("/admin/login", controller.LoginAdmin(svc))
+	mux.Handle("/admin/", middleware.Validate(controller.AdminFunctions(svc), []string{"admin"}))
 }
