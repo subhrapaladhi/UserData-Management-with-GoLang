@@ -48,7 +48,7 @@ func serverInit(db *mongo.Client) *http.ServeMux {
 	})
 
 	api.UserRoutes(mux, userSvc)
-	api.AdminRoutes(mux, adminSvc)
+	api.AdminRoutes(mux, adminSvc, userSvc)
 
 	return mux
 }

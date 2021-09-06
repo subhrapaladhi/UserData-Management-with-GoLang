@@ -13,7 +13,6 @@ import (
 func Validate(next http.Handler, allowedRoles []string) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 		authHeader := strings.Split(r.Header.Get("Authorization"), "Bearer ")
-
 		if len(authHeader) != 2 {
 			fmt.Println("Malformed token")
 			rw.WriteHeader(http.StatusUnauthorized)
